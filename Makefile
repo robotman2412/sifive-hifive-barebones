@@ -3,9 +3,7 @@ MAKEFLAGS     += --silent
 OPENSBI        = $(shell pwd)/opensbi/build/platform/generic/firmware/fw_dynamic.bin
 CROSS_COMPILE ?= riscv64-linux-gnu-
 
-.PHONY: qemu image kernel clean fullclean
-
-qemu: image
+.PHONY: image kernel clean fullclean
 
 image: kernel
 	# Create boot filesystem
@@ -39,10 +37,10 @@ image: kernel
 		--new=4:12288:-0   --change-name=4:root  --typecode=4:0x8300 \
 		image.hdd
 	
-	# Data onto partitions
-	dd if=u-boot/spl/u-boot-spl.bin bs=512 seek=34   of=image.hdd
-	dd if=u-boot/u-boot.itb         bs=512 seek=2082 of=image.hdd
-	dd if=fatfs.bin                 bs=512 seek=4096 of=image.hdd
+	# Copy data onto partitions
+	dd if=u-boot/spl/u-boot-spl.bin bs=512 seek=34   of=image.hdd conv=notrunc
+	dd if=u-boot/u-boot.itb         bs=512 seek=2082 of=image.hdd conv=notrunc
+	dd if=fatfs.bin                 bs=512 seek=4096 of=image.hdd conv=notrunc
 
 kernel:
 	cmake -B build
