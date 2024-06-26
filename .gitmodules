@@ -1,0 +1,9 @@
+[submodule "limine"]
+	path = limine
+	url = https://github.com/limine-bootloader/limine
+[submodule "u-boot"]
+	path = u-boot
+	url = https://github.com/u-boot/u-boot
+[submodule "opensbi"]
+	path = opensbi
+	url = https://github.com/riscv-software-src/opensbi
