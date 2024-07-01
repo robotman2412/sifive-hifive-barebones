@@ -5,7 +5,8 @@ ENTRY(_start)
 
 PHDRS
 {
-    text     PT_LOAD    FLAGS(0x05); /* Execute + Read */
+    phdrs    PT_PHDR    PHDRS;
+    text     PT_LOAD    PHDRS FLAGS(0x05); /* Execute + Read */
     rodata   PT_LOAD    FLAGS(0x04); /* Read only */
     data     PT_LOAD    FLAGS(0x06); /* Write + Read */
     dynamic  PT_DYNAMIC FLAGS(0x06); /* Dynamic PHDR for relocations */
@@ -13,7 +14,8 @@ PHDRS
 
 SECTIONS
 {
-    . = 0xffffffff80000000;
+    . = 0xffffff8000000000;
+    /* . = 0xc0000000; */
 
     .text : {
         *(.text .text.*)
@@ -24,26 +26,31 @@ SECTIONS
     .rodata : {
         *(.rodata .rodata.* .srodata .srodata.*)
     } :rodata
+    .dynstr : { *(.dynstr) } :rodata
+    .dynsym : { *(.dynsym) } :rodata
+    .rela.dyn : { *(.rela.dyn) } :rodata
 
     . = ALIGN(4096);
 
-    .data : {
-        *(.data .data.* .sdata .sdata.*)
+    .dynamic : { *(.dynamic) } :data :dynamic
 
+    .got : { *(.got) } :data
+    .got.plt : { *(.got.plt) } :data
+
+    .data : {
         /* Limine requests. */
         KEEP(*(.requests_start_marker))
         KEEP(*(.requests))
         KEEP(*(.requests_end_marker))
+        *(.data .data.*)
+        *(.sdata .sdata.*)
     } :data
-
-    /* We need to support dynamic relocations I suppose. */
-    .dynamic : {
-        *(.dynamic)
-    } :data :dynamic
+    PROVIDE(__global_pointer$ = .);
 
     /* Add zero-initialized memory last to avoid padding. */
     .bss : {
-        *(.bss .bss.* .sbss .sbss.*)
+        *(.sbss .sbss.*)
+        *(.bss .bss.*)
         *(COMMON)
     } :data
 

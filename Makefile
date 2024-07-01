@@ -3,7 +3,7 @@ MAKEFLAGS     += --silent
 OPENSBI        = $(shell pwd)/opensbi/build/platform/generic/firmware/fw_dynamic.bin
 CROSS_COMPILE ?= riscv64-linux-gnu-
 
-.PHONY: image kernel clean fullclean
+.PHONY: image kernel qemu clean fullclean
 
 image: kernel
 	# Create boot filesystem
@@ -45,6 +45,13 @@ image: kernel
 kernel:
 	cmake -B build
 	cmake --build build
+
+cache/OVMF.fd:
+	mkdir -p cache
+	cd cache && curl -o OVMF.fd https://retrage.github.io/edk2-nightly/bin/RELEASERISCV64_VIRT_CODE.fd && dd if=/dev/zero of=OVMF.fd bs=1 count=0 seek=33554432
+
+qemu: cache/OVMF.fd image
+	qemu-system-riscv64 -M virt -cpu rv64 -device ramfb -device qemu-xhci -device usb-kbd -m 2G -drive if=pflash,unit=0,format=raw,file=cache/OVMF.fd -device virtio-scsi-pci,id=scsi -device scsi-hd,drive=hd0 -drive id=hd0,format=raw,file=image.hdd
 
 clean:
 	rm -rf build image.dir
