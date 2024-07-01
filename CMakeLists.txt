@@ -30,4 +30,4 @@ add_executable(hifive
     src/start.S
 )
 target_include_directories(hifive PRIVATE include)
-# set_target_properties(hifive PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/linker.ld)
+set_target_properties(hifive PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/linker.ld)

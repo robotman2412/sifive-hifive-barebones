@@ -5,8 +5,7 @@ ENTRY(_start)
 
 PHDRS
 {
-    phdrs    PT_PHDR    PHDRS;
-    text     PT_LOAD    PHDRS FLAGS(0x05); /* Execute + Read */
+    text     PT_LOAD    FLAGS(0x05); /* Execute + Read */
     rodata   PT_LOAD    FLAGS(0x04); /* Read only */
     data     PT_LOAD    FLAGS(0x06); /* Write + Read */
     dynamic  PT_DYNAMIC FLAGS(0x06); /* Dynamic PHDR for relocations */
@@ -14,8 +13,7 @@ PHDRS
 
 SECTIONS
 {
-    . = 0xffffff8000000000;
-    /* . = 0xc0000000; */
+    . = 0xffffffff80000000;
 
     .text : {
         *(.text .text.*)
